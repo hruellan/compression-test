@@ -30,6 +30,7 @@ import zlib
 
 from headerDiffCodec import HeaderDiffCodec, IndexedHeader
 from headerDiffCodec import DELTA_FULL, DELTA_BOUND, DELTA_MAX
+from headerDiffKeepCodec import HeaderDiffKeepCodec
 
 from .. import BaseProcessor,  spdy_dictionary
 
@@ -127,7 +128,11 @@ class Processor(BaseProcessor):
       else:
         param_dict[name] = value
     
-    self.codec = HeaderDiffCodec(
+    if "keep" in param_dict:
+      codec_class = HeaderDiffKeepCodec
+    else:
+      codec_class = HeaderDiffCodec
+    self.codec = codec_class(
       param_dict[BUFFER_SIZE],
       windowSize=param_dict[DEFLATE_SIZE],
       dict=spdy_dictionary.spdy_dict,
